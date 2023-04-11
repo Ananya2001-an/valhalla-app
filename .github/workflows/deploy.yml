@@ -5,12 +5,12 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'package*.json'
-      - '.env'
-      - 'jsconfig.json'
+#    paths:
+#      - 'src/**'
+ #     - 'public/**'
+  #    - 'package*.json'
+   #   - '.env'
+    #  - 'jsconfig.json'
 
 jobs:
   deploy:
@@ -20,9 +20,12 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16.x'
-      - name: 🔧 Create build
-        run: |
-          npm install
-          npm run build
+#      - name: 🔧 Create build
+#        run: |
+#          npm install
+#          npm run build
       - name: 🚀 Deploy
-        run: rsync -r --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
+        run: |
+          mkdir latest
+          touch latest/text.txt
+          rsync -r --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
