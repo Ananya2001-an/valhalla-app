@@ -22,7 +22,7 @@ jobs:
           node-version: '16.x'
       - name: 🔧 Create build
         run: |
-         npm install
+         npm ci
          npm run build
       - name: 🚀 Deploy
         run: |
