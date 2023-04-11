@@ -22,11 +22,7 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - name: Replace homepage URL
-        uses: actions/toolkit@v2.4.1
-        with:
-          path: package.json
-          regex: '"homepage": ".+"'
-          replacement: '"homepage": "https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"'
+        run: echo '{"homepage":"https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"}' > package.json
       - uses: actions/setup-node@v2
         with:
           node-version: '16.x'
