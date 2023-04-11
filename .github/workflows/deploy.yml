@@ -28,4 +28,4 @@ jobs:
         run: |
           mkdir latest
           touch latest/text.txt
-          rsync -r --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
+          rsync --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
