@@ -2,7 +2,7 @@
   "name": "converter-demo-app",
   "version": "0.0.1",
   "private": false,
-  "homepage": "https://valhalla-app-tests.gis-ops.com/test",
+  "homepage": "https://valhalla-app-tests.gis-ops.com",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
