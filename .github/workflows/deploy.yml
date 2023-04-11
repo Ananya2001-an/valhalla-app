@@ -21,9 +21,11 @@ jobs:
         with:
           node-version: '16.x'
       - name: 🔧 Create build
+        env:
+          ROOT_URL: "https://valhalla-app-tests.gis-ops.com/test"
         run: |
           npm install
-          npm run build
+          npm run build -- --base-href=$ROOT_URL
       - name: 🚀 Deploy
         uses: appleboy/scp-action@master
         with:
