@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Replace homepage URL
         run: echo '{"homepage":"https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"}' > package.json
