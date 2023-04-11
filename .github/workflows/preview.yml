@@ -1,0 +1,36 @@
+name: PR preview
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package*.json'
+      - '.env'
+      - 'jsconfig.json'
+      
+env:
+  PULL_NUMBER: $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Replace homepage URL
+        run: echo '{"homepage":"https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"}' > package.json
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+      - name: 🔧 Create build
+        run: |
+          npm install
+          npm run build
+      - name: 🚀 Deploy
+        run: |
+          eval $(ssh-agent -s)
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+          rsync -r --delete --mkdir -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:/home/ananya/valhalla-app-testing/$PULL_NUMBER
