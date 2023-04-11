@@ -30,4 +30,4 @@ jobs:
           touch latest/text.txt
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          rsync --delete -e "ssh -o StrictHostKeyChecking=no" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
+          rsync -r --delete -e "ssh -o StrictHostKeyChecking=no" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
