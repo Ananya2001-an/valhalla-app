@@ -25,4 +25,4 @@ jobs:
           npm install
           npm run build
       - name: 🚀 Deploy
-        run: rsync --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" -r build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
+        run: rsync -r --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
