@@ -28,4 +28,6 @@ jobs:
         run: |
           mkdir latest
           touch latest/text.txt
-          rsync --delete -e "ssh -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}")" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
+          eval $(ssh-agent -s)
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+          rsync --delete -e "ssh -o StrictHostKeyChecking=no" ./latest/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}
