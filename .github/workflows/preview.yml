@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Replace homepage URL
-        run: echo '{"homepage":"https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"}' > package.json
+        run: npm config set homepage "https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"
       - uses: actions/setup-node@v2
         with:
           node-version: '16.x'
