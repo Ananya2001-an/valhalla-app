@@ -21,22 +21,22 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16.x'
-      - name: 🔧 Create build
-        run: |
-          npm install
-          npm run build
-      - name: 🚀 Deploy
-        run: |
-          eval $(ssh-agent -s)
-          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER
+      #- name: 🔧 Create build
+       # run: |
+        #  npm install
+         # npm run build
+      #- name: 🚀 Deploy
+       # run: |
+        #  eval $(ssh-agent -s)
+         # ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+          #rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER
       - name: Preview URL
-        if: success()
+#        if: success()
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const body = `Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/$PULL_REQUEST_NUMBER`;
+            const body = `Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/${PULL_REQUEST_NUMBER}`;
             const { data } = await github.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
