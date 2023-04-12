@@ -1,7 +1,6 @@
 name: PR preview
 
 on:
-  workflow_dispatch:
   pull_request:
     paths:
       - 'src/**'
@@ -9,17 +8,15 @@ on:
       - 'package*.json'
       - '.env'
       - 'jsconfig.json'
-      
-env:
-  PULL_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.action != 'closed' && github.event.action != 'merged' }}
     steps:
       - uses: actions/checkout@v2
       - name: Replace homepage URL
-        run: sed -i "s/https:\/\/valhalla.openstreetmap.de/https:\/\/valhalla-app-tests.gis-ops.com\/${PULL_NUMBER}/g" package.json
+        run: sed -i "s/https:\/\/valhalla.openstreetmap.de/https:\/\/valhalla-app-tests.gis-ops.com\/${PULL_REQUEST_NUMBER}/g" package.json
       - uses: actions/setup-node@v2
         with:
           node-version: '16.x'
@@ -31,4 +28,21 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
+          rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER
+      - name: Preview URL
+        if: ${{ success() && steps.<previous-step-name>.outcome == 'success' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: "https://valhalla-app-tests.gis-ops.com/$PULL_REQUEST_NUMBER"
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\": \"The preview is ready! 🚀 You can view it here: $URL \"}" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PULL_REQUEST_NUMBER}/comments
+      - name: Clean up
+        if: ${{ github.event.action == 'closed' || github.event.action == 'merged' }}
+        run: |
+          eval $(ssh-agent -s)
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+          ssh ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }} 'rm -rf ${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER'
