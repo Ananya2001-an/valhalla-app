@@ -31,15 +31,17 @@ jobs:
           rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_REQUEST_NUMBER
       - name: Preview URL
         if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          URL: "https://valhalla-app-tests.gis-ops.com/$PULL_REQUEST_NUMBER"
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"body\": \"The preview is ready! 🚀 You can view it here: $URL \"}" \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PULL_REQUEST_NUMBER}/comments
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = 'Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/$PULL_REQUEST_NUMBER';
+            const { data } = await github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
       - name: Clean up
         if: ${{ github.event.action == 'closed' || github.event.action == 'merged' }}
         run: |
