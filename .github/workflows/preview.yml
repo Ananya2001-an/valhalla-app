@@ -16,9 +16,9 @@ env:
 jobs:
   clean-up:
     runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'closed' }}
     steps:
       - name: remove preview
-        if: ${{ github.event.action == 'closed' }}
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
