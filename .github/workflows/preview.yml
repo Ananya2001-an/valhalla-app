@@ -2,7 +2,7 @@ name: PR preview
 
 on:
   pull_request:
-    types: [opened, reopened, edited, closed, merged]
+    types: [opened, reopened, synchronize, closed]
     paths:
       - 'src/**'
       - 'public/**'
@@ -13,7 +13,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.action != 'closed' && github.event.action != 'merged' }}
+    if: ${{ github.event.action != 'closed' }}
     steps:
       - uses: actions/checkout@v2
       - name: Replace homepage URL
@@ -44,7 +44,7 @@ jobs:
               body: body
             });
       - name: Clean up
-        if: ${{ github.event.action == 'closed' || github.event.action == 'merged' }}
+        if: ${{ github.event.action == 'closed' }}
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
