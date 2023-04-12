@@ -11,7 +11,7 @@ on:
       - 'jsconfig.json'
       
 env:
-  PULL_NUMBER: $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+  PULL_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
   deploy:
@@ -35,4 +35,4 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          rsync -r --delete --mkdir -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:/home/ananya/valhalla-app-testing/$PULL_NUMBER
+          rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
