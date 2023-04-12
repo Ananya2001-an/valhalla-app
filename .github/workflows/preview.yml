@@ -12,7 +12,6 @@ on:
       
 env:
   PULL_NUMBER: ${{ github.event.pull_request.number }}
-  BASE_URL: "https://valhalla-app-tests.gis-ops.com"
 
 jobs:
   deploy:
@@ -20,10 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Replace homepage URL
-        run: |
-          NEW_HOMEPAGE="$BASE_URL/$PULL_NUMBER"
-          jq --arg homepage "$NEW_HOMEPAGE" '. + {homepage: $homepage}' package.json > tmp.json
-          mv tmp.json package.json
+        run: sed -i 's/https:\/\/valhalla.openstreetmap.de/https:\/\/valhalla-app-tests.gis-ops.com\/$PULL_NUMBER/g' package.json
       - uses: actions/setup-node@v2
         with:
           node-version: '16.x'
