@@ -2,6 +2,7 @@ name: PR preview
 
 on:
   pull_request:
+    types: [opened, reopened, edited, closed, merged]
     paths:
       - 'src/**'
       - 'public/**'
@@ -33,7 +34,7 @@ jobs:
         if: success()
         uses: actions/github-script@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT }}
           script: |
             const body = "Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/$PULL_REQUEST_NUMBER";
             const { data } = await github.issues.createComment({
