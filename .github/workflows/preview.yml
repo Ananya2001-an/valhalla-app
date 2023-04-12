@@ -12,6 +12,7 @@ on:
       
 env:
   PULL_NUMBER: ${{ github.event.pull_request.number }}
+  BASE_URL: "https://valhalla-app-tests.gis-ops.com"
 
 jobs:
   deploy:
@@ -20,8 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Replace homepage URL
         run: |
-          HOMEPAGE=$(jq -r '.homepage' package.json)
-          NEW_HOMEPAGE="https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"
+          NEW_HOMEPAGE="$BASE_URL/$PULL_NUMBER"
           jq --arg homepage "$NEW_HOMEPAGE" '. + {homepage: $homepage}' package.json > tmp.json
           mv tmp.json package.json
       - uses: actions/setup-node@v2
