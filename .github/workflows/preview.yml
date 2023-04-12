@@ -30,11 +30,11 @@ jobs:
         #  npm run build
       - name: 🚀 Deploy
         run: |
-         # eval $(ssh-agent -s)
-          # ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          # rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
+   #       eval $(ssh-agent -s)
+  #         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+ #          rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
       - name: Preview URL
-        #if: success()
+ #       if: success()
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.PAT }}
