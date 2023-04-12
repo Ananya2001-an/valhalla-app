@@ -18,8 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
       - name: Replace homepage URL
         run: echo '{"homepage":"https://valhalla-app-tests.gis-ops.com/$PULL_NUMBER"}' > package.json
       - uses: actions/setup-node@v2
