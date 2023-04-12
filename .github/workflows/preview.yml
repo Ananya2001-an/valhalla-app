@@ -22,7 +22,7 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          ssh -o StrictHostKeyChecking=no ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }} 'rm -rf ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER'
+          ssh -o StrictHostKeyChecking=no ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }} "rm -rf ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER"
   deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event.action != 'closed' }}
@@ -35,15 +35,15 @@ jobs:
           node-version: '16.x'
       - name: 🔧 Create build
         run: |
-       #   npm install
-        #  npm run build
+          npm install
+          npm run build
       - name: 🚀 Deploy
         run: |
-   #       eval $(ssh-agent -s)
-  #         ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
- #          rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
+          eval $(ssh-agent -s)
+           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+           rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
       - name: Preview URL
- #       if: success()
+        if: success()
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.PAT }}
