@@ -22,7 +22,7 @@ jobs:
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-          ssh ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }} 'rm -rf ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER'
+          ssh -o StrictHostKeyChecking=no ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }} 'rm -rf ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER'
   deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event.action != 'closed' }}
