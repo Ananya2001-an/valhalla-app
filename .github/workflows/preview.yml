@@ -44,21 +44,22 @@ jobs:
 #            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
 #            rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
       - name: Preview URL
-#         if: success()
+#         if: ${{ success() }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const prNumber = context.payload.pull_request.number;
-            const { data: comments } = await github.issues.listComments({
+            const { Octokit } = require("octokit");
+            const octokit = new Octokit({ auth: context.token });
+            const { data: comments } = await octokit.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: prNumber
+              issue_number: context.issue.number
             });
             const existingComment = comments.find(comment => comment.body.includes('Preview is ready! 🚀'));
             if (!existingComment) {
             const body = `Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/${{ github.event.pull_request.number }}`;
-            const { data } = await github.issues.createComment({
+            const { data } = await octokit.rest.issues.createComment({
               owner: 'github',
               repo: context.repo.repo,
               issue_number: context.issue.number,
