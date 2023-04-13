@@ -49,13 +49,6 @@ jobs:
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const { data: comments } = await github.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number
-            });
-            const existingComment = comments != undefined && comments.find(comment => comment.body.includes('Preview is ready! 🚀'));
-            if (!existingComment) {
             const body = `Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/${{ github.event.pull_request.number }}`;
             const { data } = await github.issues.createComment({
               owner: 'github',
@@ -64,7 +57,4 @@ jobs:
               body: body
             });
             console.log('Comment created successfully');
-            } else {
-              console.log('Comment already exists');
-            }
       
