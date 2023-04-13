@@ -45,14 +45,15 @@ jobs:
 #            rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
       - name: Preview URL
 #         if: success()
-        uses: actions/github-script@v6
+        uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.PAT }}
           script: |
+            const prNumber = context.payload.pull_request.number;
             const { data: comments } = await github.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number
+              issue_number: prNumber
             });
             const existingComment = comments.find(comment => comment.body.includes('Preview is ready! 🚀'));
             if (!existingComment) {
@@ -64,7 +65,6 @@ jobs:
               body: body
             });
             console.log('Comment created successfully');
-            console.log(JSON.stringify(data));
             } else {
               console.log('Comment already exists');
             }
