@@ -58,7 +58,7 @@ jobs:
             if (!existingComment) {
             const body = `Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/${{ github.event.pull_request.number }}`;
             const { data } = await github.rest.issues.createComment({
-              owner: 'github',
+              owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: body
