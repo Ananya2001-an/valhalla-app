@@ -9,6 +9,7 @@ on:
       - 'package*.json'
       - '.env'
       - 'jsconfig.json'
+      - '.github/workflows/preview.yml'
 
 env:
   PULL_NUMBER: ${{ github.event.pull_request.number }}
@@ -27,28 +28,28 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.action != 'closed' }}
     steps:
-#       - uses: actions/checkout@v3
-#       - name: Replace homepage URL
-#         run: sed -i "s/https:\/\/valhalla.openstreetmap.de/https:\/\/valhalla-app-tests.gis-ops.com\/${PULL_NUMBER}/g" package.json
-#       - uses: actions/setup-node@v3
-#         with:
-#           node-version: '16.x'
-#       - name: 🔧 Create build
-#         run: |
-#           npm install
-#           npm run build
-#       - name: 🚀 Deploy
-#         run: |
-#           eval $(ssh-agent -s)
-#            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
-#            rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
-      - name: Preview URL
-#         if: success()
-        uses: actions/github-script@v6
-        with:
+       - uses: actions/checkout@v3
+       - name: Replace homepage URL
+         run: sed -i "s/https:\/\/valhalla.openstreetmap.de/https:\/\/valhalla-app-tests.gis-ops.com\/${PULL_NUMBER}/g" package.json
+       - uses: actions/setup-node@v3
+         with:
+           node-version: '16.x'
+       - name: 🔧 Create build
+         run: |
+           npm install
+           npm run build
+       - name: 🚀 Deploy
+         run: |
+           eval $(ssh-agent -s)
+            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+            rsync -r --delete --rsync-path="mkdir -p ${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER && rsync" -e "ssh -o StrictHostKeyChecking=no" ./build/ ${{ vars.HOST_USERNAME }}@${{ vars.HOST_IP }}:${{ vars.HOST_TARGET_DIR }}/$PULL_NUMBER
+       - name: Preview URL
+         if: ${{ success() }}
+         uses: actions/github-script@v6
+         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const { data: comments } = await github.issues.listComments({
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number
@@ -56,14 +57,13 @@ jobs:
             const existingComment = comments.find(comment => comment.body.includes('Preview is ready! 🚀'));
             if (!existingComment) {
             const body = `Preview is ready! 🚀 You can view it here: https://valhalla-app-tests.gis-ops.com/${{ github.event.pull_request.number }}`;
-            const { data } = await github.issues.createComment({
-              owner: 'github',
+            const { data } = await github.rest.issues.createComment({
+              owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body: body
             });
             console.log('Comment created successfully');
-            console.log(JSON.stringify(data));
             } else {
               console.log('Comment already exists');
             }
